@@ -7,8 +7,20 @@ import (
 	"os"
 )
 
-func LoadData(path string) ([]string, error) {
-	file, err := os.Open(path)
+type FileManager struct {
+	InputFilePath  string
+	OutputFilePath string
+}
+
+func New(inputFilePath, outputFilePath string) FileManager {
+	return FileManager{
+		InputFilePath:  inputFilePath,
+		OutputFilePath: outputFilePath,
+	}
+}
+
+func (fm FileManager) LoadData() ([]string, error) {
+	file, err := os.Open(fm.InputFilePath)
 
 	if err != nil {
 		return nil, errors.New(err.Error())
@@ -33,8 +45,8 @@ func LoadData(path string) ([]string, error) {
 	return lines, nil
 }
 
-func WriteData(path string, data any) error {
-	file, err := os.Create(path)
+func (fm FileManager) WriteData(data any) error {
+	file, err := os.Create(fm.OutputFilePath)
 
 	if err != nil {
 		file.Close()
