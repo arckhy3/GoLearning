@@ -1,6 +1,7 @@
 package price
 
 import (
+	"errors"
 	"fmt"
 
 	iomanager "example.com/calculator/IOManager"
@@ -22,8 +23,12 @@ func NewPriceIncludeTaxJob(iom iomanager.IOManager, taxRate float64) *PriceInclu
 	}
 }
 
-func (job *PriceIncludeTaxJob) Process() {
-	job.LoadData()
+func (job *PriceIncludeTaxJob) Process() error {
+	err := job.LoadData()
+
+	if err != nil {
+		return err
+	}
 
 	result := make(map[string]string)
 	for _, price := range job.InputPrice {
@@ -32,24 +37,25 @@ func (job *PriceIncludeTaxJob) Process() {
 	}
 
 	job.PriceIncludeTax = result
-	job.IOManager.WriteData(job)
+	return job.IOManager.WriteData(job)
 }
 
-func (job *PriceIncludeTaxJob) LoadData() {
+func (job *PriceIncludeTaxJob) LoadData() error {
 
 	lines, err := job.IOManager.LoadData()
 
 	if err != nil {
-		fmt.Println("Failed to read data")
-		fmt.Println(err)
+		err = errors.New("Failed to read data")
+		return err
 	}
 
 	prices, err := conversion.StringToFloat(lines)
 
 	if err != nil {
-		fmt.Println("Value failed to convert")
-		fmt.Println(err)
+		err = errors.New("Value failed to convert")
+		return err
 	}
 
 	job.InputPrice = prices
+	return nil
 }
