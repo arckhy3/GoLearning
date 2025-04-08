@@ -69,3 +69,21 @@ func GetAll() ([]Event, error) {
 	}
 	return events, err
 }
+
+func (e Event) UpdateByID() error {
+	query := `
+				UPDATE events
+				SET name = ?,
+				description = ?,
+				location = ?,
+				datetime = ?
+				WHERE ID = ?
+				`
+	stmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(e.Name, e.Description, e.Location, e.DateTime, e.ID)
+	return err
+}
