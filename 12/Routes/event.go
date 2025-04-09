@@ -87,12 +87,12 @@ func deleteByID(context *gin.Context) {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "Failed to get data.", "error": err})
 		return
 	}
-	_, err = models.GetEventByID(id)
+	e, err := models.GetEventByID(id)
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to get data", "error": err})
 		return
 	}
-	err = models.DeleteByID(id)
+	err = e.Delete()
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to delete data", "error": err})
 		return

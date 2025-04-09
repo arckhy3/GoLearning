@@ -88,7 +88,7 @@ func (e Event) UpdateByID() error {
 	return err
 }
 
-func DeleteByID(id int64) error {
+func (e Event) Delete() error {
 	query := `DELETE FROM events
 			WHERE ID = ?
 	`
@@ -98,7 +98,7 @@ func DeleteByID(id int64) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(id)
+	_, err = stmt.Exec(e.ID)
 	if err != nil {
 		return err
 	}
