@@ -4,6 +4,8 @@ import "github.com/gin-gonic/gin"
 
 type Route interface {
 	Save() (any, error)
+	UpdateByID() error
+	Delete() error
 }
 
 func RegisterRoute(server *gin.Engine) {
@@ -13,4 +15,10 @@ func RegisterRoute(server *gin.Engine) {
 	server.POST("/events", saveEvent)
 	server.PUT("/events/:id", updateEvent)
 	server.DELETE("/events/:id", deleteEvent)
+
+	server.GET("/users", getUsers)
+	server.GET("/users/:id", getUser)
+	server.POST("/signup", saveUser)
+	server.PUT("/user/:id", updateUser)
+	server.DELETE("/user/:id", deleteUser)
 }
