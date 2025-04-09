@@ -81,7 +81,7 @@ func updateEvent(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"message": "Update success!", "event": updateEvent})
 }
 
-func deleteByID(context *gin.Context) {
+func deleteEvent(context *gin.Context) {
 	id, err := strconv.ParseInt(context.Param("id"), 10, 64)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "Failed to get data.", "error": err})
