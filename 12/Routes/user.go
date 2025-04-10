@@ -109,3 +109,22 @@ func deleteUser(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"message": "User delete success"})
 
 }
+
+func login(context *gin.Context) {
+	var user = models.User{}
+	err := context.ShouldBind(&user)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data", "error": err.Error()})
+		return
+	}
+
+	err = user.ValidateCredential()
+
+	if err != nil {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "Login failed", "error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, gin.H{"message": "Login success"})
+}

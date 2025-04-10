@@ -1,7 +1,10 @@
 package models
 
 import (
+	"errors"
+
 	"example.com/event/db"
+	"example.com/event/utils"
 )
 
 type User struct {
@@ -22,7 +25,13 @@ func (user User) Save() (User, error) {
 
 	defer stmt.Close()
 
-	result, err := stmt.Exec(user.Email, user.Password)
+	hashedPassword, err := utils.HashPassword(user.Password)
+
+	if err != nil {
+		return user, err
+	}
+
+	result, err := stmt.Exec(user.Email, hashedPassword)
 	if err != nil {
 		return user, err
 	}
@@ -36,6 +45,31 @@ func (user User) Save() (User, error) {
 	user.ID = id
 
 	return user, nil
+}
+
+func (user User) ValidateCredential() error {
+	query := `
+	SELECT password FROM users
+	WHERE
+	email = ?
+	`
+	row := db.DB.QueryRow(query, user.Email)
+
+	var retrievePassword string
+
+	err := row.Scan(&retrievePassword)
+
+	if err != nil {
+		return err
+	}
+
+	valid := utils.CheckPasswordHash(user.Password, retrievePassword)
+
+	if !valid {
+		err = errors.New("invalid credential")
+	}
+
+	return err
 }
 
 func GetAllUser() ([]User, error) {
