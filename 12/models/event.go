@@ -15,26 +15,26 @@ type Event struct {
 	UserID      int64
 }
 
-func (e Event) Save() (Event, error) {
+func (e *Event) Save() error {
 	query := `
 	INSERT INTO events(name,description,location,datetime,user_id)
 	VALUES(?,?,?,?,?)
 	`
 	stmt, err := db.DB.Prepare(query)
 	if err != nil {
-		return e, err
+		return err
 	}
 	defer stmt.Close()
 	result, err := stmt.Exec(e.Name, e.Description, e.Location, e.DateTime, e.UserID)
 	if err != nil {
-		return e, err
+		return err
 	}
 	id, err := result.LastInsertId()
 	if err != nil {
-		return e, err
+		return err
 	}
 	e.ID = id
-	return e, err
+	return err
 }
 
 func GetEventByID(id int64) (*Event, error) {

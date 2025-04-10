@@ -47,9 +47,9 @@ func (user User) Save() (User, error) {
 	return user, nil
 }
 
-func (user User) ValidateCredential() error {
+func (user *User) ValidateCredential() error {
 	query := `
-	SELECT password FROM users
+	SELECT id,password FROM users
 	WHERE
 	email = ?
 	`
@@ -57,7 +57,7 @@ func (user User) ValidateCredential() error {
 
 	var retrievePassword string
 
-	err := row.Scan(&retrievePassword)
+	err := row.Scan(&user.ID, &retrievePassword)
 
 	if err != nil {
 		return err

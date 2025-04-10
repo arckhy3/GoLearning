@@ -3,8 +3,10 @@ package routes
 import (
 	"net/http"
 	"strconv"
+	"strings"
 
 	"example.com/event/models"
+	"example.com/event/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -32,16 +34,38 @@ func getEvent(context *gin.Context) {
 }
 
 func saveEvent(context *gin.Context) {
+	token := context.Request.Header.Get("Authorization")
+
+	if token == "" {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "Not Authorize 1"})
+		return
+	}
+
+	var bearertoken = "Bearer "
+
+	ok := strings.Contains(token, bearertoken)
+
+	if ok {
+		token = token[len(bearertoken):]
+	}
+
+	userID, err := utils.VerifyToken(token)
+
+	if err != nil {
+		context.JSON(http.StatusUnauthorized, gin.H{"message": "Not Authorize 2", "error": err.Error()})
+		return
+	}
+
 	var event models.Event
-	err := context.ShouldBindJSON(&event)
+	err = context.ShouldBindJSON(&event)
 
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"message": "Could not parse request data.", "error": err.Error()})
 		return
 	}
 
-	event.UserID = 1
-	event, err = event.Save()
+	event.UserID = userID
+	err = event.Save()
 
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "Data failed to create.", "error": err.Error()})
