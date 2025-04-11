@@ -47,7 +47,7 @@ func saveUser(context *gin.Context) {
 		return
 	}
 
-	user, err = user.Save()
+	err = user.Save()
 
 	if err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to create user", "error": err.Error()})

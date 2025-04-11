@@ -70,7 +70,7 @@ func GetAllEvent() ([]Event, error) {
 	return events, err
 }
 
-func (e Event) UpdateByID() error {
+func (e *Event) UpdateByID() error {
 	query := `
 				UPDATE events
 				SET name = ?,

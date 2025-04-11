@@ -13,14 +13,14 @@ type User struct {
 	Password string `binding:"required"`
 }
 
-func (user User) Save() (User, error) {
+func (user *User) Save() error {
 	query := `
 	INSERT INTO users(email,password)
 	VALUES(?,?)
 	`
 	stmt, err := db.DB.Prepare(query)
 	if err != nil {
-		return user, err
+		return err
 	}
 
 	defer stmt.Close()
@@ -28,23 +28,23 @@ func (user User) Save() (User, error) {
 	hashedPassword, err := utils.HashPassword(user.Password)
 
 	if err != nil {
-		return user, err
+		return err
 	}
 
 	result, err := stmt.Exec(user.Email, hashedPassword)
 	if err != nil {
-		return user, err
+		return err
 	}
 
 	id, err := result.LastInsertId()
 
 	if err != nil {
-		return user, err
+		return err
 	}
 
 	user.ID = id
 
-	return user, nil
+	return nil
 }
 
 func (user *User) ValidateCredential() error {
