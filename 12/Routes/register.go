@@ -50,11 +50,6 @@ func cancelRegistration(context *gin.Context) {
 		return
 	}
 
-	if err != nil {
-		context.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to get data", "error": err.Error()})
-		return
-	}
-
 	userID := context.GetInt64("userID")
 	register.UserID = userID
 	register.EventID = eventID
